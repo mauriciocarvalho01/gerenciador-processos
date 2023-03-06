@@ -1,0 +1,7 @@
+node_modules
+.env
+.vscode
+coverage
+libs
+huskys
+.huskys_change_for_lint_tests

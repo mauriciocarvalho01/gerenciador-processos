@@ -1,0 +1,74 @@
+{
+  "name": "hom-gerenciador-processos",
+  "version": "1.0.0",
+  "description": "Gerenciador responsável por processar agendamentos e consumir filas de processos",
+  "author": "Mauricio Carvalho",
+  "license": "ISC",
+  "main": "src/main/index.js",
+  "type": "module",
+  "scripts": {
+    "pm2-start": "pm2 start ecosystem.config.cjs && pm2 logs",
+    "start": "node -r dotenv/config --watch src/main/index.js",
+    "lint": "eslint .",
+    "lint:fix": "npm run lint -- --fix",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest --passWithNoTests --no-cache --runInBand",
+    "test:watch": "npm test -- --watch",
+    "test:coverage": "npm run test -- --coverage",
+    "test:staged": "npm test -- --findRelatedTests --silent",
+    "test:unit": "npm test -- --watch -c jest-unit-config.js",
+    "test:integration": "npm test -- --watch -c jest-integration-config.js",
+    "test:coveralls": "npm run test:ci && coveralls < coverage/lcov.info",
+    "prepare": "husky install"
+  },
+  "standard": {
+    "env": [
+      "jest"
+    ]
+  },
+  "imports": {
+    "#root/*": "./*",
+    "#infra/*": "./src/infra/*/*.js",
+    "#gateways/*": "./src/infra/gateways/*/*.js",
+    "#main/*": "./src/main/*/*.js",
+    "#tools/*": "./src/tools/*/*.js",
+    "#controllers/*": "./src/application/controllers/*.js",
+    "#adm/*": "./src/departments/adm/*.js",
+    "#worker/*": "./src/departments/worker/*.js",
+    "#application/*": "./src/application/*/*.js",
+    "#domain/*": "./src/domain/*/*.js",
+    "#departments/*": "./src/departments/*/*.js",
+    "#factories/*": "./src/main/factories/*.js"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.3",
+    "cross-env": "^7.0.3",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.0.3",
+    "elastic-apm-node": "^3.42.0",
+    "eslint-config-standard": "^17.0.0",
+    "events": "^3.3.0",
+    "express": "^4.18.2",
+    "fs-extra": "^11.1.0",
+    "lodash": "^4.17.21",
+    "md5": "^2.3.0",
+    "module-alias": "^2.2.2",
+    "moment": "^2.29.4",
+    "node-fetch": "^3.3.0",
+    "nodemon": "^2.0.20",
+    "pm2": "^5.2.2",
+    "underscore": "^1.13.6",
+    "uuidv4": "^6.2.13",
+    "xml-js": "^1.6.11",
+    "zlib": "^1.0.5"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.20.2",
+    "@types/module-alias": "^2.0.1",
+    "babel-jest": "^29.4.2",
+    "eslint": "^8.33.0",
+    "fetch-mock-jest": "^1.5.1",
+    "husky": "^8.0.3",
+    "jest": "^29.4.2",
+    "lint-staged": "^13.1.1"
+  }
+}
