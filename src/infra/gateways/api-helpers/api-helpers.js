@@ -9,6 +9,7 @@ export class ApiHelper {
     return JSON.stringify({
       app_secret: appSecret,
       app_key: appKey,
+      validate: process.env.VALIDATE_API_DATA,
       params
     })
   }

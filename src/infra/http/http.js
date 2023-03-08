@@ -1,10 +1,18 @@
 import { HttpError } from '#infra/errors'
 
 import fetch from 'node-fetch'
+import http from 'node:http'
+import https from 'node:https'
 
 export class Http {
   constructor() {
     this.headers = { 'Content-Type': 'application/json' }
+    this.httpAgent = new http.Agent({
+      keepAlive: true
+    })
+    this.httpsAgent = new https.Agent({
+      keepAlive: true
+    })
   }
 
   async sendHook(httpOptions) {
@@ -16,6 +24,7 @@ export class Http {
     console.log(`Request Url: ${url}`)
     fetchOptions.headers = this.headers
     fetchOptions.signal = controller.signal
+    fetchOptions.agent = (_parsedURL) => _parsedURL.protocol === 'http:' ? this.httpAgent : this.httpsAgent
     return await fetch(url, fetchOptions)
       .then(async (response) => {
         const data = await response.json()

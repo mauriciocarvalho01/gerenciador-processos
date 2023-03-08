@@ -166,34 +166,34 @@ export class XmlCte extends Xml {
 
   numeroCte = async () => {
     const nNF = await this.getKey(this.objectXml, 'cteProc.CTe.infCte.ide.nCT._text')
-    if (!nNF) throw new XmlFieldError(new Error('Não encontrado número da nota'))
+    //if (!nNF) throw new XmlFieldError(new Error('Não encontrado número da nota'))
     this.xmlInfo.documento = nNF
     return this
   }
 
   modeloDfe = async () => {
     const nNF = await this.getKey(this.objectXml, 'cteProc.CTe.infCte.ide.mod._text')
-    if (!nNF) throw new XmlFieldError(new Error('Não encontrado modelo Dfe'))
+    //if (!nNF) throw new XmlFieldError(new Error('Não encontrado modelo Dfe'))
     this.xmlInfo.modelo_dfe = nNF
   }
 
   dataEmissao = async () => {
     const dhEmi = await this.getKey(this.objectXml, 'cteProc.CTe.infCte.ide.dhEmi._text')
-    if (!dhEmi) throw new XmlFieldError(new Error('Não encontrado data de emissão'))
+    //if (!dhEmi) throw new XmlFieldError(new Error('Não encontrado data de emissão'))
     this.xmlInfo.data_emissao = dhEmi
     return this
   }
 
   valorDfe = async () => {
     const vCte = await this.getKey(this.objectXml, 'cteProc.CTe.infCte.vPrest.vTPrest._text')
-    if (!vCte) throw new XmlFieldError(new Error('Não encontrado valor da nota'))
+    //if (!vCte) throw new XmlFieldError(new Error('Não encontrado valor da nota'))
     this.xmlInfo.valor_dfe = vCte
     return this
   }
 
   chave = async () => {
     const id = await this.getKey(this.objectXml, 'cteProc.CTe.infCte._attributes.Id')
-    if (!id) throw new XmlFieldError(new Error('Não encontrado chave da nota'))
+    //if (!id) throw new XmlFieldError(new Error('Não encontrado chave da nota'))
     this.xmlInfo.chave = id.split('CTe')[1]
     return this
   }

@@ -3,8 +3,10 @@
 import fs from 'fs-extra'
 
 import { ProcessNotFoundError, DepartmentNotFoundError } from '#application/errors'
-import { Api, Agendamento, GrupoProcessos, Processos } from '#infra/gateways'
+import { Api, Agendamento, GrupoProcessos, GrupoTerceiros, Processos } from '#infra/gateways'
 import { File } from '#tools/file'
+import { Os } from '#tools/os'
+
 export class Manager {
   constructor(worker) {
     this.worker = worker
@@ -42,7 +44,7 @@ export class Manager {
             ]
           })
           if (grupoProcesso) {
-            const { processos_parametros_id_processos } = grupoProcesso
+            const { processos_parametros_id_processos, grupo_processos_id_grupo_processos } = grupoProcesso
             api.system('avalon')
             const processos = new Processos(api)
             const processo = await processos.findOne({
@@ -53,6 +55,17 @@ export class Manager {
               ]
             })
 
+            api.system('dfe')
+            const grupoTerceiro = new GrupoTerceiros(api)
+            const grupoTerceiros = await grupoTerceiro.findBy({
+              pagina: 1,
+              andWhere: [
+                { chave: 'grupo-terceiros_id_grupo_processos', valor: grupo_processos_id_grupo_processos }
+              ]
+            })
+
+            const workerGroupCount = parseInt(grupoTerceiros.length / new Os().countCpus())
+
             if (processo) {
               const { processos_tipo, processos_processo, processos_tipo_nome } = processo
               if (processos_tipo_nome === 'api') {
@@ -60,7 +73,7 @@ export class Manager {
                 const processFullName = `${processos_tipo}_${processos_processo}`
                 const queueName = this.resolveQueueName({ prefixQueue: agendamento_id_agendamento, processFullName })
                 console.log(`Processo[${processName}] encontrado: ${departmentPath}/${serviceName}/${processName}`)
-                const workerReport = await this.worker.createNewWorkerGroup({ broker, channel, processName, queueName, processPath: `${departmentPath}/${serviceName}/${processName}` })
+                const workerReport = await this.worker.createNewWorkerGroup({ broker, channel, workerGroupCount, processName, queueName, processPath: `${departmentPath}/${serviceName}/${processName}` })
                 if (workerReport) console.log('manageProcessForWorker', workerReport.message)
                 callback(workerReport)
               }

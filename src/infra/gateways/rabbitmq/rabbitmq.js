@@ -3,7 +3,7 @@
 import * as amqp from 'amqplib'
 import EventEmitter from 'events'
 import { AgendamentoExecucao, Api, Agendamento } from '#infra/gateways'
-import { Moment } from '#tools/datetime'
+import { Moment } from '#tools/moment'
 
 export class RabbitMQ {
 
@@ -43,10 +43,10 @@ export class RabbitMQ {
     }
   }
 
-  consumeQueue = async ({ channel, queueName, workerGroupCount }) => {
+  consumeQueue = async ({ channel, queueName, workerGroupCount }, callback) => {
     const eventEmitter = new EventEmitter()
     const queue = await channel.assertQueue(queueName)
-    const prefecth = parseInt(queue.messageCount / workerGroupCount)
+    const prefecth = workerGroupCount
     console.log('Grupo de workers', workerGroupCount)
     await channel.prefetch(prefecth)
     console.log('Tarefa por grupo de  workers', prefecth)
@@ -61,7 +61,12 @@ export class RabbitMQ {
     }, {
       noAck: false
     })
-    return messageRepository
+    setTimeout(async () => {
+      eventEmitter.emit('consumeDone')
+      callback(messageRepository)
+    }, 10000)
+
+    await new Promise(resolve => eventEmitter.once('consumeDone', resolve))
   }
 
   ackMessagesOfQueue = async (options) => {
@@ -78,8 +83,6 @@ export class RabbitMQ {
     } = options.workerInformation.execucao
 
     const { agendamento_id_agendamento, tamanho_fila, tamanho_grupo } = options.workerInformation.taskGroupElement
-
-    const { queueName } = options.workerInformation.workerData
 
     if (message) {
       const api = new Api()
@@ -98,7 +101,6 @@ export class RabbitMQ {
       })
       if (updated) {
         await channel.ack(message)
-        const queue = await channel.assertQueue(queueName)
         console.info(`Posição na fila: ${message.fields.deliveryTag}`)
         console.info(`Tamanho da fila: ${tamanho_fila - message.fields.deliveryTag}`)
         console.info(`Tamanho do grupo: ${tamanho_grupo - indice_fila}`)
@@ -131,9 +133,7 @@ export class RabbitMQ {
       response
     } = options.workerInformation.execucao
 
-    const { agendamento_id_agendamento, tamanho_grupo } = options.workerInformation.taskGroupElement
-
-    const { queueName } = options.workerInformation.workerData
+    const { agendamento_id_agendamento, tamanho_fila, tamanho_grupo } = options.workerInformation.taskGroupElement
 
     if (message) {
       const api = new Api()
@@ -151,13 +151,11 @@ export class RabbitMQ {
         }
       })
       if (updated) {
-        await channel.reject(message, false)
-        const queue = await channel.assertQueue(queueName)
-        const tamanho_fila = queue.messageCount + queue.consumerCount
+        await channel.reject(message, true)
         console.info(`Posição na fila: ${message.fields.deliveryTag}`)
         console.info(`Tamanho da fila: ${tamanho_fila - message.fields.deliveryTag}`)
-        console.info(`Tamanho do grupo: ${tamanho_grupo - message.fields.deliveryTag}`)
-        console.info(`Indice: ${indice_fila + 1}`)
+        console.info(`Tamanho do grupo: ${tamanho_grupo - indice_fila}`)
+        console.info(`Indice: ${indice_fila}`)
         if (tamanho_fila - message.fields.deliveryTag === 0) {
           console.info('Processamento concluido')
           const agendamento = new Agendamento(api)

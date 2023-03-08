@@ -1,9 +1,9 @@
 import { Xml } from '#domain/documents'
 import { XmlFieldError } from '#domain/errors'
-import { Moment } from '#tools/datetime'
+import { Moment } from '#tools/moment'
 
 export class XmlCfe extends Xml {
-  constructor ({ xml, externalHelpers }) {
+  constructor({ xml, externalHelpers }) {
     super({ xml, externalHelpers })
     this.objectExtractor = externalHelpers.lodash
     this.gzip = externalHelpers.zlib
@@ -60,34 +60,34 @@ export class XmlCfe extends Xml {
 
   numeroCfe = async () => {
     const nNF = await this.getKey(this.objectXml, 'CFe.infCFe.ide.nCFe._text')
-    if (!nNF) throw new XmlFieldError(new Error('Não encontrado número da nota'))
+    //if (!nNF) throw new XmlFieldError(new Error('Não encontrado número da nota'))
     this.xmlInfo.documento = nNF
     return this
   }
 
   modeloDfe = async () => {
     const nNF = await this.getKey(this.objectXml, 'CFe.infCFe.ide.mod._text')
-    if (!nNF) throw new XmlFieldError(new Error('Não encontrado modelo Dfe'))
+    //if (!nNF) throw new XmlFieldError(new Error('Não encontrado modelo Dfe'))
     this.xmlInfo.modelo_dfe = nNF
   }
 
   dataEmissao = async () => {
     const dhEmi = await this.getKey(this.objectXml, 'CFe.infCFe.ide.dEmi._text')
-    if (!dhEmi) throw new XmlFieldError(new Error('Não encontrado data de emissão'))
-    this.xmlInfo.data_emissao =  new Moment(dhEmi).dateTime()
+    //if (!dhEmi) throw new XmlFieldError(new Error('Não encontrado data de emissão'))
+    this.xmlInfo.data_emissao = new Moment(dhEmi).now().format('YYYY-MM-DDTHH:mm:ss')
     return this
   }
 
   valorDfe = async () => {
     const vCfe = await this.getKey(this.objectXml, 'CFe.infCFe.total.vCFe._text')
-    if (!vCfe) throw new XmlFieldError(new Error('Não encontrado valor da nota'))
+    //if (!vCfe) throw new XmlFieldError(new Error('Não encontrado valor da nota'))
     this.xmlInfo.valor_dfe = vCfe
     return this
   }
 
   chave = async () => {
     const id = await this.getKey(this.objectXml, 'CFe.infCFe._attributes.Id')
-    if (!id) throw new XmlFieldError(new Error('Não encontrado chave da nota'))
+    //if (!id) throw new XmlFieldError(new Error('Não encontrado chave da nota'))
     this.xmlInfo.chave = id.split('CFe')[1]
     return this
   }
@@ -106,7 +106,7 @@ export class XmlCfe extends Xml {
     return this
   }
 
-  info () {
+  info() {
     return this.xmlInfo
   }
 }

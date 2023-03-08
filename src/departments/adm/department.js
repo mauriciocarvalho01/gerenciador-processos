@@ -26,7 +26,7 @@ export class Department {
               departmentPath: `${departmentServicesPath}/${departmentName}`
             },
             (workerReport) => {
-              if (workerReport) {
+              if (workerReport?.message) {
                 callback(workerReport.message)
               } else {
                 console.log('serviceForManager', workerReport)

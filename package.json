@@ -1,5 +1,5 @@
 {
-  "name": "hom-gerenciador-processos",
+  "name": "dev-gerenciador-processos",
   "version": "1.0.0",
   "description": "Gerenciador responsável por processar agendamentos e consumir filas de processos",
   "author": "Mauricio Carvalho",

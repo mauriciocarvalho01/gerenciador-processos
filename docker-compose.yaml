@@ -2,12 +2,12 @@ version: "3"
 
 services:
   ##Gerenciador
-  hom-gerenciador-processos:
+  dev-gerenciador-processos:
     # logging:
     #   driver: none
     build:
       context: ./
-    container_name: hom-gerenciador-processos
+    container_name: dev-gerenciador-processos
     user: root
     ports:
       - 6000:3000

@@ -1,6 +1,6 @@
 import { Xml } from '#domain/documents'
 import { XmlFieldError } from '#domain/errors'
-import { Moment } from '#tools/datetime'
+import { Moment } from '#tools/moment'
 
 export class XmlNfse extends Xml {
   constructor({ xml, externalHelpers }) {
@@ -40,7 +40,7 @@ export class XmlNfse extends Xml {
       await this.getKey(this.objectXml, 'ConsultarNfseResposta.ListaNfse.CompNfse.Nfse.InfNfse.PrestadorServico.Endereco.CodigoMunicipio._text') ??
       await this.getKey(this.objectXml, 'RetornoConsulta.NFe.MunicipioPrestacao._text') ??
       await this.getKey(this.objectXml, 'RetornoConsulta.NFe.EnderecoPrestador.Cidade._text')
-    if (!codMunPREST) throw new XmlFieldError(new Error('Não encontrado codigo municipio do prestador'))
+    //if (!codMunPREST) throw new XmlFieldError(new Error('Não encontrado codigo municipio do prestador'))
     console.log('Código Municipal Prestador: ', codMunPREST)
     this.xmlInfo.cod_municipal_prestador = codMunPREST
     return this
@@ -60,9 +60,11 @@ export class XmlNfse extends Xml {
     const numEndPREST = await this.getKey(this.objectXml, 'ns2:NFSE.ns2:Nfse.ns3:PrestadorServico.ns3:Endereco.ns3:Numero._text') ??
       await this.getKey(this.objectXml, 'ConsultarNfseResposta.ListaNfse.CompNfse.Nfse.InfNfse.PrestadorServico.Endereco.Numero._text') ??
       await this.getKey(this.objectXml, 'RetornoConsulta.NFe.EnderecoPrestador.NumeroEndereco._text')
-    // if (!numEndPREST) throw new XmlFieldError(new Error('Não encontrado número endereço prestador'))
-    console.log('Número Endereço Prestador: ', numEndPREST)
-    this.xmlInfo.numero_endereco_prestador = numEndPREST
+    this.xmlInfo.numero_endereco_prestador = ''
+    if (numEndPREST) {
+      console.log('Número Endereço Prestador: ', numEndPREST)
+      this.xmlInfo.numero_endereco_prestador = numEndPREST
+    }
     return this
   }
 
@@ -102,7 +104,7 @@ export class XmlNfse extends Xml {
     const razaoPrestador = await this.getKey(this.objectXml, 'ns2:NFSE.ns2:Nfse.ns3:PrestadorServico.ns3:RazaoSocial._text') ??
       await this.getKey(this.objectXml, 'ConsultarNfseResposta.ListaNfse.CompNfse.Nfse.InfNfse.PrestadorServico.RazaoSocial._text') ??
       await this.getKey(this.objectXml, 'RetornoConsulta.NFe.RazaoSocialPrestador._text')
-    if (!razaoPrestador) throw new XmlFieldError(new Error('Não encontrado razao social prestador'))
+    //if (!razaoPrestador) throw new XmlFieldError(new Error('Não encontrado razao social prestador'))
     console.log('Razao Social Prestador: ', razaoPrestador)
     this.xmlInfo.razao_prestador = razaoPrestador
     return this
@@ -197,7 +199,7 @@ export class XmlNfse extends Xml {
     const endTOM = await this.getKey(this.objectXml, 'ns2:NFSE.ns2:Nfse.ns3:TomadorServico.ns3:Endereco.ns3:Estado._text') ??
       await this.getKey(this.objectXml, 'ConsultarNfseResposta.ListaNfse.CompNfse.Nfse.InfNfse.TomadorServico.Endereco.Uf._text') ??
       await this.getKey(this.objectXml, 'RetornoConsulta.NFe.EnderecoTomador.UF._text')
-    this.xmlInfo.uf_tomador = 'Não informado'
+    this.xmlInfo.uf_tomador = ''
     if (endTOM) {
       console.log('Uf Tomador: ', endTOM)
       this.xmlInfo.uf_tomador = endTOM
@@ -427,8 +429,8 @@ export class XmlNfse extends Xml {
       await this.getKey(this.objectXml, 'ConsultarNfseResposta.ListaNfse.CompNfse.Nfse.InfNfse.DataEmissao._text') ??
       await this.getKey(this.objectXml, 'RetornoConsulta.NFe.DataEmissaoNFe._text')
     // if (!dhEmi) throw new XmlFieldError(new Error('Não encontrado data de emissão'))
-    console.log('Data emissão: ', new Moment(dhEmi).date())
-    this.xmlInfo.data_emissao = new Moment(dhEmi).date()
+    console.log('Data emissão: ', new Moment(dhEmi).now().format('YYYY-MM-DD'))
+    this.xmlInfo.data_emissao = new Moment(dhEmi).now().format('YYYY-MM-DD')
     return this
   }
 
@@ -438,8 +440,8 @@ export class XmlNfse extends Xml {
       await this.getKey(this.objectXml, 'RetornoConsulta.NFe.DataEmissaoRPS._text') ??
       await this.getKey(this.objectXml, 'RetornoConsulta.NFe.DataEmissaoNFe._text')
     // if (!comEmi) throw new XmlFieldError(new Error('Não encontrado data de emissão'))
-    console.log('Competência emissão: ', new Moment(comEmi).firstDayOfMonth())
-    this.xmlInfo.comp_emissao = new Moment(comEmi).firstDayOfMonth()
+    console.log('Competência emissão: ', new Moment(comEmi).firstDayOfMonth().format('YYYY-MM-DD'))
+    this.xmlInfo.comp_emissao = new Moment(comEmi).firstDayOfMonth().format('YYYY-MM-DD')
     return this
   }
 

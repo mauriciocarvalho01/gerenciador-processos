@@ -1,8 +1,9 @@
+
 module.exports = {
   apps: [{
     name: 'dev-gerenciador-processos',
     script: './src/main/index.js',
-    instances: 'max',
+    instances: process.env.PM2_CLUSTERS,
     exec_mode: 'cluster',
     watch: false,
     args: ['--max-memory-restart', '10G'],
@@ -11,7 +12,7 @@ module.exports = {
     log_date_format: 'YYYY-MM-DD HH:mm:ss.SSS',
     autorestart: true,
     watch_ignore: ['node_modules', 'logs'],
-    cron_restart: '*/30 * * * *',
+    cron_restart: '0 */5 * * *',
     out_file: './logs/out.log',
     error_file: './logs/error.log',
     watch_options: {

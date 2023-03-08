@@ -13,7 +13,9 @@ export class DepartmentController {
     try {
       const departmentServicesPath = `${process.cwd()}/src/departments/services`
       console.log(`Services Path: ${departmentServicesPath}`)
-      await this.department.serviceForManager(departmentServicesPath, (report) => { console.log('perform', report) })
+      await this.department.serviceForManager(departmentServicesPath, (report) => {
+        console.log('perform', report)
+      })
     } catch (error) {
       console.log(error.message)
     }

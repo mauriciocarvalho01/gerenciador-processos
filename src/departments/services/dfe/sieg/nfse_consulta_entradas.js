@@ -5,14 +5,15 @@ import { parentPort, workerData, threadId } from 'worker_threads'
 import { WorkerReportError } from '#application/errors'
 import { SiegApiHelper, TokenExterno, Api, Nfse } from '#infra/gateways'
 import { ExtractXml } from '#departments/documents'
-import { Moment } from '#tools/datetime'
+import { Moment } from '#tools/moment'
 import { Empresa } from '#domain/empresa'
+import { Documentos } from '#domain/documents'
 
 const companyGroupFactory = async (messages) => {
   return lodash.chain(messages)
     .groupBy('content.message_content.cliente.clientes_id_clientes')
     .map(async (processos, cliente_id_cliente) => {
-      const { content,queueLength } = processos[0]
+      const { content, queueLength } = processos[0]
       const { message_content } = content
       const { processo, grupo_processos, cliente, agendamento } = message_content
       return {
@@ -103,9 +104,10 @@ const execute = async (options, callback) => {
         console.log(`---------------------------- PROCESSANDO EMPRESA ${empresa.cnpj} -----------------------------------------`)
         console.info('Processo autorizado')
         console.log(`CNPJ:: ${empresa.cnpj}`)
-        options.workerInformation.execucao.competencia = new Moment().currentCompetence(grupo_processos_config.competencia)
+        options.workerInformation.execucao.competencia = new Documentos().competencia(grupo_processos_config.competencia)
         options.workerInformation.execucao.empresa = empresa
         if (await consultAndSave(options)) options.messageBroker.ackMessage = true
+        options.workerInformation.execucao.siegApiHelper = null
       } else {
         console.warn(`Existem dados inválidos no processo:  ${JSON.stringify(checksum)}`)
         options.messageBroker.rejectMessage = true
@@ -124,7 +126,7 @@ const consultAndSave = async (options) => {
   console.log(`Paginação Sieg: ${options.workerInformation.execucao.pagina}`)
   console.log(`Competencia: ${JSON.stringify({ dataInicio: competencia, dataFim: new Moment(competencia).lastDayOfMonth() })}`)
   const apiBody = siegApiHelper.competencia({ dataInicio: competencia, dataFim: new Moment(competencia).lastDayOfMonth() })
-    .cnpjTomador(empresa.cnpj)
+    .cnpjDestino(empresa.cnpj)
     .tipoXml('nfe')
     .paginacao({ take: 50, skip: options.workerInformation.execucao.pagina })
     .download(false)

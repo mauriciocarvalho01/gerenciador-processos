@@ -18,63 +18,73 @@ export class SiegApiHelper extends Http {
     this.take = 50
     this.pagina = 0
     this.body = {}
-    // Nfe Saida Emit Entrada Dest
-    // Cte Saida Emit Entrada Tom
   }
 
-  token({ apikey, email }) {
+  token = ({ apikey, email }) => {
     this.body.apikey = apikey
     this.body.email = email
     return this
   }
 
-  competencia({ dataInicio, dataFim }) {
+  competencia = ({ dataInicio, dataFim }) => {
     this.body.dataInicio = dataInicio
     this.body.dataFim = dataFim
     return this
   }
 
-  cnpjDestino(cnpj) {
+  // nfse entradas
+  // nfe entradas
+  cnpjDestino = (cnpj) => {
     this.body.cnpjDest = cnpj
     return this
   }
 
-  cnpjEmitente(cnpj) {
+  // nfse saidas
+  cnpjPrestador = (cnpj) => {
     this.body.cnpjEmit = cnpj
     return this
   }
 
-  cnpjTomador(cnpj) {
+  // nfe saidas
+  // cfe saidas
+  // cte saidas
+  cnpjEmitente = (cnpj) => {
+    this.body.cnpjEmit = cnpj
+    return this
+  }
+
+  // cte entradas
+  cnpjTomador = (cnpj) => {
     this.body.cnpjTom = cnpj
     return this
   }
 
-  tipoXml(tipo) {
+  tipoXml = (tipo) => {
     this.body.xmltype = tipo
     return this
   }
 
-  paginacao({ take, skip }) {
+  paginacao = ({ take, skip }) => {
     this.body.take = take
     this.body.skip = skip
     return this
   }
 
-  download(download) {
+  download = (download) => {
     this.body.downloadevent = download
     return this
   }
 
-  getBody() {
+  getBody = () => {
     const body = this.body
     return body
   }
 
-  convert(params) {
+  convert = (params) => {
     return JSON.stringify(params)
   }
 
-  async consumeApi(body) {
+  consumeApi = async (body) => {
     const response = await this.sendHook(
       {
         url: this.apiXmlSearch,

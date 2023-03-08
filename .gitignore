@@ -3,5 +3,5 @@ node_modules
 .vscode
 coverage
 libs
-huskys
+.huskys
 .huskys_change_for_lint_tests
