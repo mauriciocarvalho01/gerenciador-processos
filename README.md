@@ -1,5 +1,5 @@
 
-# Gerenciador Processos
+# Gerenciador Processos (Consumer)
 
 * TDD
 * Clean Architecture
